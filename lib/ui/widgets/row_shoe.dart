@@ -1,20 +1,22 @@
 import 'package:cart_shoe/mixins/formatter.dart';
 import 'package:cart_shoe/model/shoe.dart';
-import 'package:cart_shoe/ui/list_shoe/list_shoe_controller.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:cart_shoe/riverpod.dart';
+import 'package:cart_shoe/ui/list_shoe/view_model/list_shoe_view_model.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class RowShoe extends StatelessWidget {
-  ListShoeController controller= Get.find<ListShoeController>();
+class RowShoe extends ConsumerWidget {
+  late ListShoeViewModel viewModel;
   Shoe shoe;
   RowShoe({
-    this.shoe
+    required this.shoe
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context,WidgetRef ref) {
+    viewModel=ref.read(listShoeViewModel);
     return Container(
+      height: 200,
       margin: EdgeInsets.all(5),
       padding: EdgeInsets.all(10),
       decoration: BoxDecoration(
@@ -51,11 +53,12 @@ class RowShoe extends StatelessWidget {
           SizedBox(height: 5,),
           Center(
             child: Builder(builder: (context){
-              Shoe shoe_in_cart=controller.shoe_in_cart.firstWhere((Shoe cart_item) =>
+
+              Shoe? shoeInCart=viewModel.listShoeInCart.firstWhere((Shoe cart_item) =>
               cart_item.id==
-                  shoe.id,orElse: ()=>null);
-              if(shoe_in_cart!=null){
-                return _buildQty(shoe_in_cart);
+                  shoe.id,orElse: ()=>Shoe());
+              if(shoeInCart.id!=0){
+                return _buildQty(shoeInCart);
               }else{
                 return _buildAddToCart();
               }
@@ -67,37 +70,56 @@ class RowShoe extends StatelessWidget {
     );
   }
 
-  Widget _buildQty(Shoe shoe_in_cart){
+  Widget _buildQty(Shoe shoeInCart){
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        InkWell(
-          onTap: ()=>controller.minusQty(shoe_in_cart),
-          child: Container(
-            padding: EdgeInsets.all(3),
-            decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.black,width: 1)
-            ),
-            child: Icon(Icons.remove,color: Colors.black,size: 18,),
+        Expanded(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              InkWell(
+                onTap: ()=>viewModel.minusQtyCart(shoeInCart),
+                child: Container(
+                  padding: EdgeInsets.all(3),
+                  decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.black,width: 1)
+                  ),
+                  child: Icon(Icons.remove,color: Colors.black,size: 18,),
+                ),
+              ),
+              SizedBox(width: 7,),
+              /// disi qty yang diambil dari object buku book_on_cart
+              Text(shoeInCart.qty.toString(),style: TextStyle(color: Colors.black,fontFamily: "Poppins",fontWeight: FontWeight.bold)),
+              SizedBox(width: 7,),
+              InkWell(
+                onTap: ()=>viewModel.updateQtyCart(shoeInCart),
+                child: Container(
+                  padding: EdgeInsets.all(3),
+                  decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.black,width: 1)
+                  ),
+                  child: Icon(Icons.add,color: Colors.black,size: 18,),
+                ),
+              )
+            ],
           ),
         ),
-        SizedBox(width: 7,),
-        /// disi qty yang diambil dari object buku book_on_cart
-        Text(shoe_in_cart.qty.toString(),style: TextStyle(color: Colors.black,fontFamily: "Poppins",fontWeight: FontWeight.bold)),
-        SizedBox(width: 7,),
         InkWell(
-          onTap: ()=>controller.updateQty(shoe_in_cart),
+          onTap: ()=>viewModel.removeItemCart(shoeInCart.id),
           child: Container(
             padding: EdgeInsets.all(3),
             decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(color: Colors.black,width: 1)
             ),
-            child: Icon(Icons.add,color: Colors.black,size: 18,),
+            child: Icon(Icons.delete,color: Colors.black,size: 18,),
           ),
-        )
+        ),
       ],
     );
   }
@@ -108,8 +130,8 @@ class RowShoe extends StatelessWidget {
       child: RaisedButton(
         color: Colors.black,
         onPressed: (){
-          controller.addToCart(shoe);
-        },
+            viewModel.addToCart(shoe);
+          },
         shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0)),
         elevation: 1.0,
         child: Text("Add To Cart",style:TextStyle(fontFamily: "Poppins", color: Colors.white,fontSize: 12.0,)),

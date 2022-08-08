@@ -1,73 +1,53 @@
-import 'package:badges/badges.dart';
-import 'package:cart_shoe/ui/list_shoe/list_shoe_controller.dart';
+import 'package:cart_shoe/model/shoe.dart';
+import 'package:cart_shoe/riverpod.dart';
 import 'package:cart_shoe/ui/widgets/row_shoe.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:get/get.dart';
 
-class ListShoeScreen extends StatelessWidget {
-  ListShoeController controller=Get.find<ListShoeController>();
-
+class ListShoeScreen extends ConsumerWidget {
   @override
-  Widget build(BuildContext context) {
-    controller.getData();
+  Widget build(BuildContext context,WidgetRef ref) {
+    final _viewModel=ref.watch(listShoeViewModel);
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.black,
         actions: [
-          GetBuilder<ListShoeController>(
-              init: ListShoeController(),
-              builder: (context){
-                if(controller.shoe_in_cart.isNotEmpty){
-                  return InkWell(
-                    onTap: (){
-                      Get.toNamed("/cart");
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Badge(
-                          child: Icon(Icons.shopping_cart,color: Colors.white,),
-                          badgeColor: Colors.red,
-                          badgeContent: Text(controller.shoe_in_cart.length.toString(),style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white,fontFamily: "Poppins"),)
-                      ),
-                    ),
-                  );
-                }else{
-                  return Icon(Icons.shopping_cart,color: Colors.white,size: 20,);
-                }
-              }),
+          InkWell(
+            onTap: (){
+              if(_viewModel.listShoeInCart.length>0){
+                _viewModel.showDialogConfirm(context);
+              }
+            },
+            child: Icon(Icons.shopping_cart,color: Colors.white,),
+          ),
           SizedBox(width: 5,),
           InkWell(
-            onTap: ()=>controller.logout(),
+            onTap: (){
+              _viewModel.showDialogLogout(context);
+            },
             child: Icon(Icons.power_settings_new_outlined,color: Colors.white,),
           ),
           SizedBox(width: 12,)
 
         ],
-        title: Text("Stein",style: TextStyle(fontFamily: "Poppins",color: Colors.white),),
+        title: Text("Stein Sneaker",style: TextStyle(fontFamily: "Poppins",color: Colors.white),),
       ),
       body: Container(
         padding: EdgeInsets.all(5),
-        child: GetBuilder<ListShoeController>(
-          init: ListShoeController(),
-          builder: (controller2){
-            return _buildList();
-          },
-        )
+        child: _buildList(_viewModel.listShoe)
       ),
     );
   }
 
-  Widget _buildList(){
-   return StaggeredGridView.countBuilder(
+  Widget _buildList(List<Shoe> list){
+   return AlignedGridView.count(
       crossAxisCount: 2,
       crossAxisSpacing: 5,
       mainAxisSpacing: 5,
-     staggeredTileBuilder: (index) {
-       return StaggeredTile.count(1,  1.2);
-     },
-      itemCount: controller.list_shoe.length,
+      itemCount: list.length,
       itemBuilder: (context, index) {
-        return RowShoe(shoe: controller.list_shoe[index],);
+        return RowShoe(shoe: list[index],);
       },
     );
   }

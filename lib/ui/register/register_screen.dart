@@ -1,14 +1,11 @@
-import 'package:cart_shoe/ui/register/register_controller.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:cart_shoe/riverpod.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class RegisterScreen extends StatelessWidget {
-  GlobalKey<FormState>formKey= new GlobalKey<FormState>();
-  RegisterController registerController=Get.find<RegisterController>();
-
+class RegisterScreen extends ConsumerWidget {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context,WidgetRef ref) {
+    final _viewModel=ref.watch(registerViewModel);
     return Scaffold(
       body:Center(
         child: Container(
@@ -16,7 +13,7 @@ class RegisterScreen extends StatelessWidget {
           child: ListView(
             children: [
               Form(
-                key: formKey,
+                key: _viewModel.formKey,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -29,14 +26,14 @@ class RegisterScreen extends StatelessWidget {
                     ),
                     SizedBox(height:50),
                     TextFormField(
-                      validator: (String value){
-                        if(value.isEmpty){
+                      validator: (String? value){
+                        if(value!.isEmpty){
                           return "please fill your name";
                         }
                         return null;
                       },
-                      onSaved: (String value){
-                        registerController.name=value;
+                      onSaved: (String? value){
+                        _viewModel.name=value!;
                       },
                       style:  new TextStyle(
                         fontFamily: "Poppins",
@@ -51,14 +48,14 @@ class RegisterScreen extends StatelessWidget {
                     ),
                     SizedBox(height:30),
                     TextFormField(
-                      validator: (String value){
-                        if(value.isEmpty){
+                      validator: (String? value){
+                        if(value!.isEmpty){
                           return "please fill your email";
                         }
                         return null;
                       },
-                      onSaved: (String value){
-                        registerController.email=value;
+                      onSaved: (String? value){
+                        _viewModel.email=value!;
                       },
                       style:  new TextStyle(
                         fontFamily: "Poppins",
@@ -72,17 +69,16 @@ class RegisterScreen extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height:30),
-                    Obx(
-                          ()=> TextFormField(
-                        obscureText: registerController.isObscured.value,
-                        validator: (String value){
-                          if(value.isEmpty){
+                    TextFormField(
+                        obscureText: _viewModel.isObscured,
+                        validator: (String? value){
+                          if(value!.isEmpty){
                             return "please fill your password";
                           }
                           return null;
                         },
-                        onSaved: (String value){
-                          registerController.password=value;
+                        onSaved: (String? value){
+                          _viewModel.password=value!;
                         },
                         style:  new TextStyle(
                           fontFamily: "Poppins",
@@ -92,9 +88,9 @@ class RegisterScreen extends StatelessWidget {
                             suffixIcon:
                             InkWell(
                               onTap: (){
-                                registerController.obscureEvent();
+                                _viewModel.obscureEvent();
                               },
-                              child: registerController.isObscured==true?
+                              child: _viewModel.isObscured==true?
                               Icon(Icons.visibility):Icon(Icons.visibility_off),
                             ),
                             border: OutlineInputBorder(
@@ -102,7 +98,6 @@ class RegisterScreen extends StatelessWidget {
                               borderSide: new BorderSide(),
                             )
                         ),
-                      ),
                     ),
                     SizedBox(height:30),
                     SizedBox(height: 20,),
@@ -112,15 +107,13 @@ class RegisterScreen extends StatelessWidget {
                       child: RaisedButton(
                         color: Colors.black,
                         onPressed: (){
-                          //eksekusi fungsi register
-                          registerController.register(formKey);
+                          _viewModel.register(context);
                         },
                         shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0)),
                         elevation: 4.0,
                         child: Text("Register",style:TextStyle( color: Colors.white,fontSize: 15.0,)),
                       ),
                     ),
-
                   ],
                 ),
               )

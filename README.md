@@ -1,10 +1,12 @@
 # Cart Application
 
-Cart Application using State management Getx and Get Storage
+Cart Application menggunakan State management Riverpod dan Hive FLutter sebagai Local Storage
+
+Aplikasi ini dibuat dengan menggunakan Flutter versi 3.0.4
 
 ## Screen Shoot
 
- ![](images/ss1.png)
- ![](images/ss2.png)
- ![](images/ss3.png)
+ ![](images/ss1.jpg)
+ ![](images/ss2.jpg)
+ ![](images/ss3.jpg)
 

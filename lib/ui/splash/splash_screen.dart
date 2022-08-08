@@ -1,13 +1,11 @@
-import 'package:cart_shoe/ui/splash/splash_controller.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:cart_shoe/riverpod.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class SplashScreen extends StatelessWidget {
-  SplashController controller=Get.find<SplashController>();
+class SplashScreen extends ConsumerWidget {
   @override
-  Widget build(BuildContext context) {
-    controller.startSplash();
+  Widget build(BuildContext context,WidgetRef ref) {
+    ref.read(splashViewModel(context));
     return Scaffold(
       body: Container(
         color: Colors.black,

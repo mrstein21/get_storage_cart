@@ -6,7 +6,7 @@ Aplikasi ini dibuat dengan menggunakan Flutter versi 3.0.4
 
 ## Screen Shoot
 
- ![](images/ss1.jpg)
- ![](images/ss2.jpg)
- ![](images/ss3.jpg)
+ ![](images/ss1.jpeg)
+ ![](images/ss2.jpeg)
+ ![](images/ss3.jpeg)
 
